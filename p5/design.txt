@@ -1,0 +1,25 @@
+# Design of Simulation using Threads and Locks
+
+## Overview
+The simulation employs a multithreaded approach to simulate the movement of trains and passengers across the MBTA network. Each train and passenger is assigned a separate thread, and shared locks ensure thread-safe access to stations.
+
+## Use of Threads
+- Each train has a thread responsible for moving it between stations, logging its movement, and notifying waiting passengers.
+- Each passenger has a thread responsible for their journey, including boarding and deboarding trains at the appropriate stations.
+
+## Use of Locks
+- A separate `ReentrantLock` is used for each station to control access.
+- Each lock is associated with a `Condition` to allow passengers to wait for the arrival of their train at a station.
+- Passengers use `await()` to wait for a train and `signalAll()` is used by trains to notify all waiting passengers when they arrive.
+
+## Avoidance of Deadlocks
+- Stations are locked individually, and no global lock is used.
+- Trains only lock the next station they are moving to, and passengers lock only their current station, avoiding circular waiting.
+
+## Handling Missed Trains
+- Passengers wait for a specific train at each station. If the train they are waiting for does not stop at their station, they will remain waiting.
+
+## Rule Adherence
+- Trains stay at a station for 10 milliseconds before moving to the next station.
+- Locks are only held for as long as necessary to avoid race conditions.
+- Logging is integrated to record each action and validate the simulation against the rules.
